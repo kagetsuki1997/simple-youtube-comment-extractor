@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use snafu::Snafu;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -9,6 +7,12 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     #[snafu(display("{source}"))]
     Command { source: Box<dyn CommandError> },
+
+    #[snafu(display("Error occurs while initialising Tokio runtime.\nError: {source}"))]
+    InitializeTokioRuntime { source: std::io::Error },
+
+    #[snafu(display("Could not create directory for saving log.\nError: {source}"))]
+    CreateLogDirectory { source: std::io::Error },
 }
 
 impl Error {
@@ -16,7 +20,9 @@ impl Error {
     /// `std::process::exit()`
     pub fn exit_code(&self) -> exitcode::ExitCode {
         match self {
-            Self::Command { source } => source.exit_code()
+            Self::Command { source } => source.exit_code(),
+            Self::InitializeTokioRuntime { .. } => exitcode::SOFTWARE,
+            Self::CreateLogDirectory { .. } => exitcode::IOERR,
         }
     }
 }

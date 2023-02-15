@@ -1,18 +1,47 @@
 [package]
-name = "simple-youtube-comment-extrator"
+name = "simple-youtube-comment-extractor"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = [
+  "backtrace",
+  "native-tls",
+]
+
+backtrace = [
+  "snafu/backtraces"
+]
+
+native-tls = [
+  "reqwest/native-tls"
+]
+
+rustls-tls = [
+  "reqwest/rustls-tls"
+]
+
 [[bin]]
-name = "simple-youtube-comment-extrator"
+name = "simple-youtube-comment-extractor"
 path = "src/main.rs"
 doc = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+tokio = { version = "1", features = ["fs", "rt-multi-thread", "signal", "sync", "time"] }
+
+reqwest = { version = "0.11", default-features = false, features = [ "json" ] }
+
 clap = { version = "4", features = ["derive", "env"] }
 clap_complete = "4"
 exitcode = "1"
 mimalloc = "0.1"
 snafu = { version = "0.7", default-features = false, features = ["std", "futures"] }
+url = { version = "2", features = ["serde"] }
+xlsxwriter="0.5"
